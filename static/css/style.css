@@ -1,0 +1,623 @@
+/* Custom CSS for Brasileirão Players Search - Mobile First */
+
+/* Variables */
+:root {
+    --primary-color: #28a745;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Index badges */
+.index-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    font-weight: 600;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.index-badge-mobile {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    font-weight: 600;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+/* Base styles - Mobile First */
+body {
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: var(--light-color);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.player-card {
+    height: 100%;
+    min-height: 200px;
+}
+
+.player-card .card-body {
+    padding: 0.75rem;
+}
+
+.player-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.player-card .card-title a {
+    color: var(--dark-color);
+    transition: var(--transition);
+}
+
+.player-card .card-title a:hover {
+    color: var(--primary-color);
+}
+
+/* Buttons */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid #dee2e6;
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Search Filters */
+.card-header h5 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Player Grid */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* Stats Cards */
+.stats-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Pagination */
+.pagination .page-link {
+    border-radius: var(--border-radius);
+    margin: 0 2px;
+    color: var(--primary-color);
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent
+    );
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Mobile Specific Styles */
+@media (max-width: 575.98px) {
+    /* Smaller text and spacing for mobile */
+    body {
+        font-size: 13px;
+    }
+    
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    /* Stack form elements vertically */
+    .row.g-3 > .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* Smaller badges */
+    .badge {
+        font-size: 0.7rem;
+    }
+    
+    /* Compact player cards */
+    .player-card {
+        min-height: 180px;
+    }
+    
+    .player-card .card-title {
+        font-size: 0.9rem;
+    }
+    
+    /* Hide some elements on mobile */
+    .d-mobile-none {
+        display: none !important;
+    }
+}
+
+/* Tablet Styles */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .player-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+/* Desktop Styles */
+@media (min-width: 992px) {
+    body {
+        font-size: 15px;
+    }
+    
+    .player-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    /* Show desktop-only elements */
+    .d-desktop-block {
+        display: block !important;
+    }
+    
+    .d-desktop-inline {
+        display: inline !important;
+    }
+    
+    .d-desktop-flex {
+        display: flex !important;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    .player-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .pagination,
+    .d-print-none {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        break-inside: avoid;
+    }
+    
+    .container-fluid {
+        padding: 0;
+    }
+    
+    body {
+        font-size: 12px;
+        color: #000;
+        background: #f8f9fa;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid var(--dark-color) !important;
+    }
+    
+    .btn {
+        border-width: 2px;
+    }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --light-color: #1a1a1a;
+        --dark-color: #ffffff;
+    }
+}
+
+/* Custom utility classes */
+.text-small {
+    font-size: 0.8rem;
+}
+
+.text-xsmall {
+    font-size: 0.7rem;
+}
+
+.border-radius-lg {
+    border-radius: calc(var(--border-radius) * 1.5);
+}
+
+.shadow-custom {
+    box-shadow: var(--box-shadow);
+}
+
+.shadow-hover {
+    transition: var(--transition);
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Loading animation for images */
+img {
+    transition: opacity 0.3s ease;
+}
+
+img.loading {
+    opacity: 0.5;
+}
+
+/* Series section styling */
+.serie-section {
+    margin-bottom: 3rem;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.serie-header {
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.serie-header h4 {
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Player list styling */
+.player-list-item {
+    border: none !important;
+    padding: 1rem;
+    transition: var(--transition);
+    border-left: 4px solid transparent !important;
+}
+
+.player-list-item:hover {
+    background-color: #f8f9fa !important;
+    border-left-color: var(--primary-color) !important;
+    transform: translateX(2px);
+}
+
+.player-list-item:first-child {
+    border-top: 1px solid #dee2e6 !important;
+}
+
+.player-list-item + .player-list-item {
+    border-top: 1px solid #dee2e6 !important;
+}
+
+/* Position badges with specific colors */
+.badge-position {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.3rem 0.5rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Series-specific styling */
+.serie-section:nth-child(1) .serie-header {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-bottom-color: #28a745;
+}
+
+.serie-section:nth-child(2) .serie-header {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-bottom-color: #17a2b8;
+}
+
+.serie-section:nth-child(3) .serie-header {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-bottom-color: #ffc107;
+}
+
+.serie-section:nth-child(4) .serie-header {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border-bottom-color: #dc3545;
+}
+
+/* Player info columns */
+.player-list-item .row > div {
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+}
+
+.player-list-item h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.player-list-item h6 a {
+    color: var(--dark-color);
+    transition: var(--transition);
+}
+
+.player-list-item h6 a:hover {
+    color: var(--primary-color);
+}
+
+/* Market value styling */
+.text-success {
+    color: #28a745 !important;
+    font-weight: 600;
+}
+
+/* Contract info styling */
+.player-list-item .small {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Button group styling */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Toast container */
+#toast-container {
+    z-index: 1055;
+}
+
+/* Mobile specific list styling */
+@media (max-width: 767.98px) {
+    .player-list-item {
+        padding: 0.75rem;
+    }
+    
+    .player-list-item .row > div {
+        min-height: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .player-list-item .row > div:last-child {
+        margin-bottom: 0;
+    }
+    
+    .serie-header {
+        padding: 0.75rem;
+    }
+    
+    .serie-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .badge-position {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+        min-width: 35px;
+    }
+    
+    /* Stack columns on mobile */
+    .player-list-item .col-6:nth-child(2),
+    .player-list-item .col-6:nth-child(3) {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .player-list-item .row > div {
+        min-height: 50px;
+    }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1200px) {
+    .serie-section {
+        margin-bottom: 4rem;
+    }
+    
+    .player-list-item {
+        padding: 1.25rem;
+    }
+    
+    .serie-header {
+        padding: 1.25rem;
+    }
+}
+
+/* Print styles for lists */
+@media print {
+    .serie-section {
+        break-inside: avoid;
+        margin-bottom: 2rem;
+    }
+    
+    .player-list-item {
+        break-inside: avoid;
+        padding: 0.5rem;
+        border: 1px solid #000 !important;
+    }
+    
+    .btn-group,
+    .badge-position {
+        display: none !important;
+    }
+    
+    .serie-header {
+        background: white !important;
+        border-bottom: 2px solid #000 !important;
+    }
+}
+
+/* Accessibility improvements */
+.player-list-item:focus-within {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.serie-header h4:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Loading animation for list items */
+.player-list-item.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Smooth transitions */
+.player-list-item * {
+    transition: var(--transition);
+}
+
+/* Series count badges */
+.serie-header .badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* Hover effects for buttons */
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary:hover {
+    transform: scale(1.05);
+}
+
+/* Position badges */
+.position-goalkeeper { background-color: #17a2b8 !important; }
+.position-defender { background-color: #28a745 !important; }
+.position-midfielder { background-color: #ffc107 !important; color: #000 !important; }
+.position-forward { background-color: #dc3545 !important; }

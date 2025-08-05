@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}Busca de Jogadores - Brasileirão{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Filtros de Busca -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-funnel"></i> Filtros de Busca
+                    <button class="btn btn-sm btn-outline-primary float-end d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#searchFilters">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </h5>
+            </div>
+            <div class="collapse show" id="searchFilters">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('index') }}" id="searchForm">
+                        <div class="row g-3">
+                            <!-- Busca por Nome -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <label for="search_name" class="form-label">Nome do Jogador</label>
+                                <input type="text" class="form-control" id="search_name" name="search_name" 
+                                       placeholder="Digite o nome..." value="{{ search_params.search_name }}">
+                            </div>
+                            
+                            <!-- Série -->
+                            <div class="col-6 col-md-3 col-lg-2">
+                                <label for="serie" class="form-label">Série</label>
+                                <select class="form-select" id="serie" name="serie">
+                                    <option value="">Todas</option>
+                                    {% for serie in series_info %}
+                                    <option value="{{ serie.name }}" {% if search_params.serie == serie.name %}selected{% endif %}>
+                                        {{ serie.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Clube -->
+                            <div class="col-6 col-md-3 col-lg-2">
+                                <label for="club" class="form-label">Clube</label>
+                                <select class="form-select" id="club" name="club">
+                                    <option value="">Todos</option>
+                                    {% for club in clubs_info %}
+                                    <option value="{{ club.name }}" {% if search_params.club == club.name %}selected{% endif %}>
+                                        {{ club.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Posição -->
+                            <div class="col-6 col-md-6 col-lg-2">
+                                <label for="position" class="form-label">Posição</label>
+                                <select class="form-select" id="position" name="position">
+                                    <option value="">Todas</option>
+                                    <option value="Goalkeeper" {% if search_params.position == 'Goalkeeper' %}selected{% endif %}>Goleiro</option>
+                                    <option value="Centre-Back" {% if search_params.position == 'Centre-Back' %}selected{% endif %}>Zagueiro</option>
+                                    <option value="Left-Back" {% if search_params.position == 'Left-Back' %}selected{% endif %}>Lateral-Esquerdo</option>
+                                    <option value="Right-Back" {% if search_params.position == 'Right-Back' %}selected{% endif %}>Lateral-Direito</option>
+                                    <option value="Defender" {% if search_params.position == 'Defender' %}selected{% endif %}>Defensor</option>
+                                    <option value="Defensive Midfield" {% if search_params.position == 'Defensive Midfield' %}selected{% endif %}>Volante</option>
+                                    <option value="Central Midfield" {% if search_params.position == 'Central Midfield' %}selected{% endif %}>Meio-Campo Central</option>
+                                    <option value="Attacking Midfield" {% if search_params.position == 'Attacking Midfield' %}selected{% endif %}>Meia-Atacante</option>
+                                    <option value="Left Midfield" {% if search_params.position == 'Left Midfield' %}selected{% endif %}>Meio-Campo Esquerdo</option>
+                                    <option value="Right Midfield" {% if search_params.position == 'Right Midfield' %}selected{% endif %}>Meio-Campo Direito</option>
+                                    <option value="Midfielder" {% if search_params.position == 'Midfielder' %}selected{% endif %}>Meio-Campo</option>
+                                    <option value="Left Winger" {% if search_params.position == 'Left Winger' %}selected{% endif %}>Ponta-Esquerda</option>
+                                    <option value="Right Winger" {% if search_params.position == 'Right Winger' %}selected{% endif %}>Ponta-Direita</option>
+                                    <option value="Centre-Forward" {% if search_params.position == 'Centre-Forward' %}selected{% endif %}>Centroavante</option>
+                                    <option value="Second Striker" {% if search_params.position == 'Second Striker' %}selected{% endif %}>Segundo Atacante</option>
+                                    <option value="Striker" {% if search_params.position == 'Striker' %}selected{% endif %}>Atacante</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Idade Mínima -->
+                            <div class="col-6 col-md-3 col-lg-1">
+                                <label for="age_min" class="form-label">Idade Min</label>
+                                <input type="number" class="form-control" id="age_min" name="age_min" 
+                                       min="16" max="50" value="{{ search_params.age_min }}">
+                            </div>
+                            
+                            <!-- Idade Máxima -->
+                            <div class="col-6 col-md-3 col-lg-1">
+                                <label for="age_max" class="form-label">Idade Max</label>
+                                <input type="number" class="form-control" id="age_max" name="age_max" 
+                                       min="16" max="50" value="{{ search_params.age_max }}">
+                            </div>
+                            
+                            <!-- Data de Expiração do Contrato -->
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <label for="contract_end" class="form-label">Contrato expira em</label>
+                                <select class="form-select" id="contract_end" name="contract_end">
+                                    <option value="">Qualquer período</option>
+                                    <option value="3" {% if search_params.contract_end == '3' %}selected{% endif %}>3 meses</option>
+                                    <option value="6" {% if search_params.contract_end == '6' %}selected{% endif %}>6 meses</option>
+                                    <option value="12" {% if search_params.contract_end == '12' %}selected{% endif %}>12 meses</option>
+                                    <option value="18" {% if search_params.contract_end == '18' %}selected{% endif %}>18 meses</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Ordenação -->
+                            <div class="col-6 col-md-3 col-lg-2">
+                                <label for="sort_by" class="form-label">Ordenar por</label>
+                                <select class="form-select" id="sort_by" name="sort_by">
+                                    <option value="name" {% if search_params.sort_by == 'name' %}selected{% endif %}>Nome</option>
+                                    <option value="age" {% if search_params.sort_by == 'age' %}selected{% endif %}>Idade</option>
+                                    <option value="marketValue" {% if search_params.sort_by == 'marketValue' %}selected{% endif %}>Valor de Mercado</option>
+                                    <option value="contract" {% if search_params.sort_by == 'contract' %}selected{% endif %}>Contrato</option>
+                                    <option value="position" {% if search_params.sort_by == 'position' %}selected{% endif %}>Posição</option>
+                                    <option value="club_name" {% if search_params.sort_by == 'club_name' %}selected{% endif %}>Clube</option>
+                                    <option value="serie" {% if search_params.sort_by == 'serie' %}selected{% endif %}>Série</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Ordem -->
+                            <div class="col-6 col-md-3 col-lg-1">
+                                <label for="order" class="form-label">Ordem</label>
+                                <select class="form-select" id="order" name="order">
+                                    <option value="asc" {% if request.args.get('order', 'asc') == 'asc' %}selected{% endif %}>↑ Asc</option>
+                                    <option value="desc" {% if request.args.get('order') == 'desc' %}selected{% endif %}>↓ Desc</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Botões -->
+                            <div class="col-6 col-md-3 col-lg-1 d-flex align-items-end">
+                                <div class="btn-group w-100">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> <span class="d-none d-sm-inline">Buscar</span>
+                                    </button>
+                                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resultados -->
+<div class="row">
+    <div class="col-12">
+        {% if pagination.total_players > 0 %}
+            <!-- Header dos Resultados -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">
+                    <i class="bi bi-people"></i> 
+                    {{ pagination.total_players }} jogador{% if pagination.total_players != 1 %}es{% endif %} encontrado{% if pagination.total_players != 1 %}s{% endif %}
+                </h6>
+                
+                <!-- Paginação Superior (só no desktop) -->
+                {% if pagination.total_pages > 1 %}
+                <div class="d-none d-md-block">
+                    {% include 'pagination.html' %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Jogadores por Série em Lista -->
+            {% set series_order = ['Série A', 'Série B', 'Série C', 'Série D'] %}
+            {% for serie_name in series_order %}
+                {% if serie_name in players_by_series %}
+                    {% set players = players_by_series[serie_name] %}
+                    <div class="mb-5 serie-section">
+                        <!-- Header da Série -->
+                        <div class="d-flex align-items-center justify-content-between mb-3 serie-header">
+                            <h4 class="text-primary mb-0">
+                                <i class="bi bi-trophy-fill"></i> {{ serie_name }}
+                                <span class="badge bg-primary ms-2">{{ players|length }} jogador{% if players|length != 1 %}es{% endif %}</span>
+                            </h4>
+                            <div class="d-none d-md-block">
+                                <small class="text-muted">
+                                    {% if search_params.sort_by == 'name' %}Ordenado por nome
+                                    {% elif search_params.sort_by == 'age' %}Ordenado por idade
+                                    {% elif search_params.sort_by == 'market_value' %}Ordenado por valor
+                                    {% elif search_params.sort_by == 'contract_end' %}Ordenado por contrato
+                                    {% else %}Ordenado por nome{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Lista de Jogadores -->
+                        <div class="card">
+                            <div class="list-group list-group-flush">
+                                {% for player in players %}
+                                <div class="list-group-item list-group-item-action player-list-item">
+                                    <div class="row align-items-center">
+                                        <!-- Índice -->
+                                        <div class="col-1 text-center d-none d-md-block">
+                                            <span class="badge bg-light text-dark border index-badge">
+                                                {{ loop.index + ((pagination.page - 1) * pagination.per_page) }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Nome e Informações Principais -->
+                                        <div class="col-12 col-md-4">
+                                            <div class="d-flex align-items-center">
+                                                <!-- Índice mobile -->
+                                                <div class="me-2 d-md-none">
+                                                    <span class="badge bg-light text-dark border index-badge-mobile">
+                                                        {{ loop.index + ((pagination.page - 1) * pagination.per_page) }}
+                                                    </span>
+                                                </div>
+                                                <div class="me-3">
+                                                    <span class="badge badge-position 
+                                                        {% if player.position == 'Goalkeeper' %}bg-info
+                                                        {% elif player.position == 'Defender' %}bg-success
+                                                        {% elif player.position == 'Midfielder' %}bg-warning text-dark
+                                                        {% elif player.position == 'Forward' %}bg-danger
+                                                        {% else %}bg-secondary{% endif %}">
+                                                        {% if player.position == 'Goalkeeper' %}GOL
+                                                        {% elif player.position == 'Defender' %}DEF
+                                                        {% elif player.position == 'Midfielder' %}MEI
+                                                        {% elif player.position == 'Forward' %}ATA
+                                                        {% else %}{{ player.position[:3] }}{% endif %}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <a href="{{ url_for('player_profile', player_id=player.id) }}" 
+                                                           class="text-decoration-none text-dark fw-bold">
+                                                            {{ player.name }}
+                                                        </a>
+                                                    </h6>
+                                                    <div class="small text-muted">
+                                                        {% if player.calculated_age %}
+                                                        <i class="bi bi-calendar3"></i> {{ player.calculated_age }} anos
+                                                        {% endif %}
+                                                        {% if player.calculated_age and player.club_name %} • {% endif %}
+                                                        {% if player.club_name %}
+                                                        <i class="bi bi-shield"></i> {{ player.club_name }}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                        <!-- Valor de Mercado -->
+                        <div class="col-6 col-md-2 text-center">
+                            {% if player.marketValue and player.marketValue != 'N/A' %}
+                            <div class="fw-bold text-success">
+                                <i class="bi bi-cash-coin"></i> 
+                                <span class="d-none d-lg-inline">{{ player.marketValue|format_currency }}</span>
+                                <span class="d-lg-none">{{ (player.marketValue|format_currency|string)[:10] }}{% if (player.marketValue|format_currency|string|length) > 10 %}...{% endif %}</span>
+                            </div>
+                            {% else %}
+                            <small class="text-muted">N/A</small>
+                            {% endif %}
+                        </div>                                        <!-- Contrato -->
+                                        <div class="col-6 col-md-3 text-center">
+                                            {% if player.contract %}
+                                            <div class="small">
+                                                <i class="bi bi-calendar-check"></i> 
+                                                <span class="d-none d-md-inline">Até </span>{{ player.contract|format_date }}
+                                            </div>
+                                            {% else %}
+                                            <small class="text-muted">Sem info</small>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Ações -->
+                                        <div class="col-12 col-md-3 text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('player_profile', player_id=player.id) }}" 
+                                                   class="btn btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                    <span class="d-none d-lg-inline ms-1">Ver Perfil</span>
+                                                </a>
+                                                <button class="btn btn-outline-secondary" 
+                                                        onclick="copyPlayerInfo('{{ player.name }}', '{{ player.id }}')"
+                                                        title="Copiar informações">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Resumo da Série -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        {{ players|length }} jogador{% if players|length != 1 %}es{% endif %} 
+                                        {% if players|length > 0 %}
+                                        de {{ players|map(attribute='club_name')|unique|list|length }} clube{% if players|map(attribute='club_name')|unique|list|length != 1 %}s{% endif %}
+                                        {% endif %}
+                                    </small>
+                                    {% if players|length > 5 %}
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle"></i> 
+                                        Exibindo {{ players|length }} de {{ pagination.total_players }} total
+                                    </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Outras séries (que não sejam A, B, C, D) -->
+            {% for serie_name, players in players_by_series.items() %}
+                {% if serie_name not in ['Série A', 'Série B', 'Série C', 'Série D'] %}
+                    <div class="mb-5 serie-section">
+                        <!-- Header da Série -->
+                        <div class="d-flex align-items-center justify-content-between mb-3 serie-header">
+                            <h4 class="text-secondary mb-0">
+                                <i class="bi bi-trophy"></i> {{ serie_name }}
+                                <span class="badge bg-secondary ms-2">{{ players|length }} jogador{% if players|length != 1 %}es{% endif %}</span>
+                            </h4>
+                        </div>
+                        
+                        <!-- Lista de Jogadores -->
+                        <div class="card">
+                            <div class="list-group list-group-flush">
+                                {% for player in players %}
+                                <div class="list-group-item list-group-item-action player-list-item">
+                                    <div class="row align-items-center">
+                                        <!-- Nome e Informações Principais -->
+                                        <div class="col-12 col-md-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <span class="badge badge-position bg-secondary">
+                                                        {% if player.position %}{{ player.position[:3] }}{% else %}---{% endif %}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <a href="{{ url_for('player_profile', player_id=player.id) }}" 
+                                                           class="text-decoration-none text-dark fw-bold">
+                                                            {{ player.name }}
+                                                        </a>
+                                                    </h6>
+                                                    <div class="small text-muted">
+                                                        {% if player.calculated_age %}
+                                                        <i class="bi bi-calendar3"></i> {{ player.calculated_age }} anos
+                                                        {% endif %}
+                                                        {% if player.calculated_age and player.club_name %} • {% endif %}
+                                                        {% if player.club_name %}
+                                                        <i class="bi bi-shield"></i> {{ player.club_name }}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                        <!-- Valor de Mercado -->
+                        <div class="col-6 col-md-2 text-center">
+                            {% if player.marketValue and player.marketValue != 'N/A' %}
+                            <div class="fw-bold text-success">
+                                <i class="bi bi-cash-coin"></i> 
+                                <span class="d-none d-lg-inline">{{ player.marketValue|format_currency }}</span>
+                                <span class="d-lg-none">{{ (player.marketValue|format_currency|string)[:8] }}{% if (player.marketValue|format_currency|string|length) > 8 %}...{% endif %}</span>
+                            </div>
+                            {% else %}
+                            <small class="text-muted">N/A</small>
+                            {% endif %}
+                        </div>                                        <!-- Contrato -->
+                                        <div class="col-6 col-md-3 text-center">
+                                            {% if player.contract %}
+                                            <div class="small">
+                                                <i class="bi bi-calendar-check"></i> Até {{ player.contract|format_date }}
+                                            </div>
+                                            {% else %}
+                                            <small class="text-muted">Sem info</small>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Ações -->
+                                        <div class="col-12 col-md-3 text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('player_profile', player_id=player.id) }}" 
+                                                   class="btn btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                    <span class="d-none d-lg-inline ms-1">Ver Perfil</span>
+                                                </a>
+                                                <button class="btn btn-outline-secondary" 
+                                                        onclick="copyPlayerInfo('{{ player.name }}', '{{ player.id }}')"
+                                                        title="Copiar informações">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Paginação Inferior -->
+            {% if pagination.total_pages > 1 %}
+            <div class="d-flex justify-content-center mt-4">
+                {% include 'pagination.html' %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <!-- Nenhum resultado -->
+            <div class="text-center py-5">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h4 class="mt-3">Nenhum jogador encontrado</h4>
+                <p class="text-muted">Tente ajustar os filtros de busca</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Voltar à busca
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Função para copiar informações do jogador
+function copyPlayerInfo(playerName, playerId) {
+    const playerInfo = `Jogador: ${playerName}\nID: ${playerId}\nPerfil: ${window.location.origin}/player/${playerId}`;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(playerInfo).then(() => {
+            showToast('Informações do jogador copiadas!', 'success');
+        }).catch(() => {
+            showToast('Erro ao copiar informações', 'error');
+        });
+    } else {
+        // Fallback para navegadores antigos
+        const textArea = document.createElement('textarea');
+        textArea.value = playerInfo;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('Informações do jogador copiadas!', 'success');
+        } catch (err) {
+            showToast('Erro ao copiar informações', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+// Função para mostrar toast notification
+function showToast(message, type = 'info', duration = 3000) {
+    // Criar container de toast se não existir
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '1055';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Criar toast
+    const toastId = 'toast-' + Date.now();
+    const iconClass = type === 'success' ? 'bi-check-circle-fill text-success' : 
+                     type === 'error' ? 'bi-x-circle-fill text-danger' : 
+                     'bi-info-circle-fill text-primary';
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="${iconClass} me-2"></i>
+                <strong class="me-auto">Notificação</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    // Inicializar e mostrar toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: duration });
+    toast.show();
+    
+    // Remover toast após esconder
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        this.remove();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit do formulário quando série muda (para carregar clubes)
+    const serieSelect = document.getElementById('serie');
+    const clubSelect = document.getElementById('club');
+    
+    if (serieSelect && clubSelect) {
+        serieSelect.addEventListener('change', function() {
+            const selectedSerie = this.value;
+            
+            // Limpa clubes
+            clubSelect.innerHTML = '<option value="">Carregando...</option>';
+            
+            if (selectedSerie) {
+                // Carrega clubes da série selecionada
+                fetch(`/api/clubs/${selectedSerie}`)
+                    .then(response => response.json())
+                    .then(clubs => {
+                        clubSelect.innerHTML = '<option value="">Todos</option>';
+                        clubs.forEach(club => {
+                            clubSelect.innerHTML += `<option value="${club}">${club}</option>`;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar clubes:', error);
+                        clubSelect.innerHTML = '<option value="">Todos</option>';
+                        showToast('Erro ao carregar clubes da série', 'error');
+                    });
+            } else {
+                // Recarrega todos os clubes
+                location.reload();
+            }
+        });
+    }
+    
+    // Collapse automático dos filtros em mobile após busca
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function() {
+            if (window.innerWidth < 992) {
+                setTimeout(() => {
+                    const filtersCollapse = document.getElementById('searchFilters');
+                    if (filtersCollapse && filtersCollapse.classList.contains('show')) {
+                        const bsCollapse = new bootstrap.Collapse(filtersCollapse, {
+                            toggle: false
+                        });
+                        bsCollapse.hide();
+                    }
+                }, 100);
+            }
+        });
+    }
+    
+    // Smooth scroll para seções das séries
+    const serieHeaders = document.querySelectorAll('.serie-header h4');
+    serieHeaders.forEach(header => {
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', function() {
+            this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    
+    // Destacar linha ao passar o mouse
+    const listItems = document.querySelectorAll('.player-list-item');
+    listItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+{% endblock %}

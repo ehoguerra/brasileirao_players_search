@@ -1,0 +1,63 @@
+<!-- Componente de Paginação -->
+<nav aria-label="Navegação de páginas">
+    <ul class="pagination pagination-sm justify-content-center">
+        <!-- Primeira página -->
+        {% if pagination.page > 2 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.args.items() %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">
+                <i class="bi bi-chevron-double-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        <!-- Página anterior -->
+        {% if pagination.page > 1 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.args.items() %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ pagination.page - 1 }}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        <!-- Páginas numeradas -->
+        {% set start_page = [pagination.page - 2, 1] | max %}
+        {% set end_page = [pagination.page + 2, pagination.total_pages] | min %}
+        
+        {% for page_num in range(start_page, end_page + 1) %}
+        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+            {% if page_num == pagination.page %}
+            <span class="page-link">{{ page_num }}</span>
+            {% else %}
+            <a class="page-link" href="?{% for key, value in request.args.items() %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}">
+                {{ page_num }}
+            </a>
+            {% endif %}
+        </li>
+        {% endfor %}
+        
+        <!-- Próxima página -->
+        {% if pagination.page < pagination.total_pages %}
+        <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.args.items() %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ pagination.page + 1 }}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        <!-- Última página -->
+        {% if pagination.page < pagination.total_pages - 1 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.args.items() %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ pagination.total_pages }}">
+                <i class="bi bi-chevron-double-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+    
+    <!-- Info da paginação em mobile -->
+    <div class="d-md-none text-center mt-2">
+        <small class="text-muted">
+            Página {{ pagination.page }} de {{ pagination.total_pages }}
+        </small>
+    </div>
+</nav>

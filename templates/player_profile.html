@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.name }} - Perfil do Jogador{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Botão Voltar -->
+    <div class="col-12 mb-3">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar à busca
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Informações Principais -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-circle"></i> {{ profile.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Informações Pessoais -->
+                    <div class="col-12 col-md-6">
+                        <h6 class="text-primary">
+                            <i class="bi bi-info-circle"></i> Informações Pessoais
+                        </h6>
+                        
+                        {% if profile.dateOfBirth %}
+                        <div class="mb-2">
+                            <strong>Data de Nascimento:</strong><br>
+                            <span class="text-muted">{{ profile.dateOfBirth|format_date }}</span>
+                            {% if profile.calculated_age %}
+                            <span class="badge bg-info ms-2">{{ profile.calculated_age }} anos</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.placeOfBirth %}
+                        <div class="mb-2">
+                            <strong>Local de Nascimento:</strong><br>
+                            <span class="text-muted">{{ profile.placeOfBirth }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.citizenship %}
+                        <div class="mb-2">
+                            <strong>Nacionalidade:</strong><br>
+                            <span class="text-muted">{{ profile.citizenship }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.height %}
+                        <div class="mb-2">
+                            <strong>Altura:</strong><br>
+                            <span class="text-muted">{{ profile.height }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.foot %}
+                        <div class="mb-2">
+                            <strong>Pé:</strong><br>
+                            <span class="text-muted">{{ profile.foot }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Informações Profissionais -->
+                    <div class="col-12 col-md-6">
+                        <h6 class="text-primary">
+                            <i class="bi bi-briefcase"></i> Informações Profissionais
+                        </h6>
+                        
+                        {% if profile.position %}
+                        <div class="mb-2">
+                            <strong>Posição:</strong><br>
+                            <span class="badge bg-primary">
+                                {% if profile.position == 'Goalkeeper' %}Goleiro
+                                {% elif profile.position == 'Defender' %}Defensor
+                                {% elif profile.position == 'Midfielder' %}Meio-campo
+                                {% elif profile.position == 'Forward' %}Atacante
+                                {% else %}{{ profile.position }}{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.marketValue and profile.marketValue != 'N/A' %}
+                        <div class="mb-2">
+                            <strong>Valor de Mercado:</strong><br>
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-cash"></i> {{ profile.marketValue|format_currency }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if profile.contract %}
+                        <div class="mb-2">
+                            <strong>Contrato:</strong><br>
+                            <span class="text-muted">
+                                <i class="bi bi-calendar-event"></i> 
+                                Válido até {{ profile.contract|format_date }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informações Laterais -->
+    <div class="col-12 col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-speedometer2"></i> Resumo
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>ID do Jogador:</span>
+                    <code>{{ profile.id }}</code>
+                </div>
+                
+                {% if stats and stats.stats %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Temporadas:</span>
+                    <span class="badge bg-info">{{ stats.stats|map(attribute='seasonId')|unique|list|length }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Competições:</span>
+                    <span class="badge bg-warning">{{ stats.stats|map(attribute='competitionId')|unique|list|length }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Ações -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-gear"></i> Ações
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir Perfil
+                    </button>
+                    
+                    <button class="btn btn-outline-success" onclick="shareProfile()">
+                        <i class="bi bi-share"></i> Compartilhar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estatísticas Detalhadas -->
+{% if stats and stats.stats %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Estatísticas Detalhadas
+                    <span class="badge bg-primary ms-2">{{ stats.stats|length }} registros</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Navegação por Temporadas -->
+                <ul class="nav nav-pills mb-3" id="seasonsTab" role="tablist">
+                    {% set seasons = stats.stats|map(attribute='seasonId')|unique|sort(reverse=true)|list %}
+                    {% for season in seasons %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if loop.first %}active{% endif %}" 
+                                id="season-{{ season }}-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#season-{{ season }}" 
+                                type="button" role="tab">
+                            {{ season }}
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <!-- Conteúdo das Temporadas -->
+                <div class="tab-content" id="seasonsTabContent">
+                    {% for season in seasons %}
+                    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+                         id="season-{{ season }}" role="tabpanel">
+                        
+                        {% set season_stats = stats.stats|selectattr('seasonId', 'equalto', season)|list %}
+                        
+                        <div class="row g-3">
+                            {% for stat in season_stats %}
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card border-light">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-primary">
+                                            {{ stat.competitionName }}
+                                        </h6>
+                                        
+                                        {% if stat.clubId %}
+                                        <p class="text-muted small mb-2">
+                                            <i class="bi bi-shield"></i> Clube: {{ stat.clubId }}
+                                        </p>
+                                        {% endif %}
+                                        
+                                        <div class="row g-2 text-center">
+                                            {% if stat.appearances is defined %}
+                                            <div class="col-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="fs-5 fw-bold text-primary">{{ stat.appearances }}</div>
+                                                    <small class="text-muted">Jogos</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            {% if stat.minutesPlayed is defined %}
+                                            <div class="col-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="fs-5 fw-bold text-success">{{ stat.minutesPlayed }}</div>
+                                                    <small class="text-muted">Minutos</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            {% if stat.goals is defined %}
+                                            <div class="col-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="fs-5 fw-bold text-danger">{{ stat.goals }}</div>
+                                                    <small class="text-muted">Gols</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            {% if stat.assists is defined %}
+                                            <div class="col-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="fs-5 fw-bold text-warning">{{ stat.assists }}</div>
+                                                    <small class="text-muted">Assistências</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Estatísticas Adicionais -->
+                                        {% if stat.yellowCards is defined or stat.redCards is defined %}
+                                        <div class="mt-2 pt-2 border-top">
+                                            {% if stat.yellowCards is defined %}
+                                            <span class="badge bg-warning me-1">{{ stat.yellowCards }} <i class="bi bi-square-fill"></i></span>
+                                            {% endif %}
+                                            {% if stat.redCards is defined %}
+                                            <span class="badge bg-danger">{{ stat.redCards }} <i class="bi bi-square-fill"></i></span>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Sem estatísticas -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Estatísticas não disponíveis</strong><br>
+            {% if stats and stats.error %}
+                Erro: {{ stats.error }}
+            {% else %}
+                Não foi possível carregar as estatísticas deste jogador.
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function shareProfile() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Perfil de {{ profile.name }}',
+            text: 'Confira o perfil de {{ profile.name }} no Brasileirão Players Search',
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copia URL para clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link copiado para a área de transferência!');
+        });
+    }
+}
+
+// Print styles
+document.addEventListener('DOMContentLoaded', function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        @media print {
+            .btn, .nav-pills, #seasonsTab { display: none !important; }
+            .card { border: 1px solid #000 !important; }
+            .tab-pane { display: block !important; opacity: 1 !important; }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}
